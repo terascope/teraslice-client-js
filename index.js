@@ -1,9 +1,13 @@
 'use strict';
 
+const jobs = require('./lib/jobs')
+const cluster = require('./lib/cluster')
+const assets = require('./lib/assets')
+
 module.exports = function terasliceClient(config) {
     return {
-        jobs: require('./lib/jobs')(config),
-        cluster: require('./lib/cluster')(config),
-        assets: require('./lib/assets')(config)
+        jobs: jobs(config),
+        cluster: cluster(config),
+        assets: assets(config)
     };
 };
