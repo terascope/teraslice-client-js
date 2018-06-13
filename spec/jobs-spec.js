@@ -1,7 +1,6 @@
 'use strict';
 
-const client = require('../');
-const Job = require('../lib/job');
+const { Jobs, Job } = require('../');
 const nock = require('nock');
 
 describe('Teraslice Jobs', () => {
@@ -9,9 +8,9 @@ describe('Teraslice Jobs', () => {
     let scope;
 
     beforeEach(() => {
-        ({ jobs } = client({
+        jobs = new Jobs({
             baseUrl: 'http://teraslice.example.dev'
-        }));
+        });
         scope = nock('http://teraslice.example.dev');
     });
 
