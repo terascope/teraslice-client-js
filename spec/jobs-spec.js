@@ -5,18 +5,22 @@ const Job = require('../lib/job');
 const nock = require('nock');
 
 describe('Teraslice Jobs', () => {
+    let jobs;
+
+    beforeEach(() => {
+        ({ jobs } = client({
+            baseUrl: 'http://teraslice.example.dev'
+        }));
+    });
+
     afterEach(() => {
         nock.cleanAll();
     });
 
     describe('->submit', () => {
         let scope;
-        let jobs;
 
         beforeEach(() => {
-            ({ jobs } = client({
-                baseUrl: 'http://teraslice.example.dev'
-            }));
             scope = nock('http://teraslice.example.dev');
         });
 
@@ -103,6 +107,113 @@ describe('Teraslice Jobs', () => {
 
             it('should have a message of No job was posted', () => {
                 expect(err.message).toEqual('No job was posted');
+            });
+        });
+    });
+
+    describe('->list', () => {
+        let scope;
+
+        beforeEach(() => {
+            scope = nock('http://teraslice.example.dev');
+        });
+
+        describe('when called with nothing', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/ex')
+                    .query({ status: '*' })
+                    .reply(200, [
+                        {
+                            id: 'example'
+                        },
+                        {
+                            id: 'example-other'
+                        }
+                    ]);
+
+                jobs.list()
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve the response of of the /ex request', () => {
+                expect(result).toEqual([
+                    {
+                        id: 'example'
+                    },
+                    {
+                        id: 'example-other'
+                    }
+                ]);
+            });
+        });
+
+        describe('when called with a string', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/ex')
+                    .query({ status: 'hello' })
+                    .reply(200, [
+                        {
+                            id: 'hello-example'
+                        },
+                        {
+                            id: 'hello-example-2'
+                        }
+                    ]);
+
+                jobs.list('hello')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve the response of of the /ex request', () => {
+                expect(result).toEqual([
+                    {
+                        id: 'hello-example'
+                    },
+                    {
+                        id: 'hello-example-2'
+                    }
+                ]);
+            });
+        });
+
+        describe('when called with an object', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/ex')
+                    .query({ anything: true })
+                    .reply(200, [
+                        {
+                            id: 'object-example'
+                        },
+                        {
+                            id: 'object-example-2'
+                        }
+                    ]);
+
+                jobs.list({ anything: true })
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve the response of of the /ex request', () => {
+                expect(result).toEqual([
+                    {
+                        id: 'object-example'
+                    },
+                    {
+                        id: 'object-example-2'
+                    }
+                ]);
             });
         });
     });
