@@ -78,50 +78,6 @@ describe('Teraslice Cluster', () => {
         });
     });
 
-
-    describe('->get', () => {
-        describe('when called with nothing', () => {
-            let err;
-            beforeEach((done) => {
-                cluster.get()
-                    .then(fail)
-                    .catch((_err) => {
-                        err = _err;
-                        done();
-                    });
-            });
-
-            it('should reject with an error', () => {
-                expect(err instanceof Error).toBeTrue();
-            });
-
-            it('should reject with a empty path message', () => {
-                expect(err.toString()).toEqual('Error: endpoint must not be empty');
-            });
-        });
-
-
-        describe('when called with a non-string value', () => {
-            let err;
-            beforeEach((done) => {
-                cluster.get({ hello: 'hi' })
-                    .then(fail)
-                    .catch((_err) => {
-                        err = _err;
-                        done();
-                    });
-            });
-
-            it('should reject with an error', () => {
-                expect(err instanceof Error).toBeTrue();
-            });
-
-            it('should reject with invalid endpoint error', () => {
-                expect(err.toString()).toEqual('Error: endpoint must be a string');
-            });
-        });
-    });
-
     describe('->txt', () => {
         describe('when called with workers', () => {
             let result;
