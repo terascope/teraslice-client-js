@@ -128,7 +128,7 @@ describe('Teraslice Jobs', () => {
                     }).catch(fail);
             });
 
-            it('should resolve the response of of the /ex request', () => {
+            it('should resolve json result from Teraslice', () => {
                 expect(result).toEqual([
                     {
                         id: 'example'
@@ -161,7 +161,7 @@ describe('Teraslice Jobs', () => {
                     }).catch(fail);
             });
 
-            it('should resolve the response of of the /ex request', () => {
+            it('should resolve json result from Teraslice', () => {
                 expect(result).toEqual([
                     {
                         id: 'hello-example'
@@ -194,7 +194,7 @@ describe('Teraslice Jobs', () => {
                     }).catch(fail);
             });
 
-            it('should resolve the response of of the /ex request', () => {
+            it('should resolve json result from Teraslice', () => {
                 expect(result).toEqual([
                     {
                         id: 'object-example'
