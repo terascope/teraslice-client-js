@@ -78,6 +78,68 @@ describe('Teraslice Jobs', () => {
         });
     });
 
+
+    describe('->get', () => {
+        describe('when called with nothing', () => {
+            let err;
+            beforeEach((done) => {
+                cluster.get()
+                    .then(fail)
+                    .catch((_err) => {
+                        err = _err;
+                        done();
+                    });
+            });
+
+            it('should reject with an error', () => {
+                expect(err instanceof Error).toBeTrue();
+            });
+
+            it('should reject with a empty path message', () => {
+                expect(err.toString()).toEqual('Error: path must not be empty');
+            });
+        });
+
+
+        describe('when called with a non-string value', () => {
+            let err;
+            beforeEach((done) => {
+                cluster.get({ hello: 'hi' })
+                    .then(fail)
+                    .catch((_err) => {
+                        err = _err;
+                        done();
+                    });
+            });
+
+            it('should reject with an error', () => {
+                expect(err instanceof Error).toBeTrue();
+            });
+
+            it('should reject with invalid path error', () => {
+                expect(err.toString()).toEqual('Error: path must be a string');
+            });
+        });
+
+        describe('when called with ', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/txt/workers')
+                    .reply(200, 'workers-txt-response');
+
+                cluster.txt('workers')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve the plain test result from Teraslice', () => {
+                expect(result).toEqual('workers-txt-response');
+            });
+        });
+    });
+
     describe('->txt', () => {
         describe('when called with workers', () => {
             let result;
