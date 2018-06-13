@@ -1,16 +1,16 @@
 'use strict';
 
-const client = require('../');
+const { Cluster } = require('../');
 const nock = require('nock');
 
-describe('Teraslice Jobs', () => {
+describe('Teraslice Cluster', () => {
     let cluster;
     let scope;
 
     beforeEach(() => {
-        ({ cluster } = client({
+        cluster = new Cluster({
             baseUrl: 'http://teraslice.example.dev'
-        }));
+        });
         scope = nock('http://teraslice.example.dev');
     });
 
@@ -96,7 +96,7 @@ describe('Teraslice Jobs', () => {
             });
 
             it('should reject with a empty path message', () => {
-                expect(err.toString()).toEqual('Error: path must not be empty');
+                expect(err.toString()).toEqual('Error: endpoint must not be empty');
             });
         });
 
@@ -116,26 +116,8 @@ describe('Teraslice Jobs', () => {
                 expect(err instanceof Error).toBeTrue();
             });
 
-            it('should reject with invalid path error', () => {
-                expect(err.toString()).toEqual('Error: path must be a string');
-            });
-        });
-
-        describe('when called with ', () => {
-            let result;
-            beforeEach((done) => {
-                scope.get('/txt/workers')
-                    .reply(200, 'workers-txt-response');
-
-                cluster.txt('workers')
-                    .then((_result) => {
-                        result = _result;
-                        done();
-                    }).catch(fail);
-            });
-
-            it('should resolve the plain test result from Teraslice', () => {
-                expect(result).toEqual('workers-txt-response');
+            it('should reject with invalid endpoint error', () => {
+                expect(err.toString()).toEqual('Error: endpoint must be a string');
             });
         });
     });
