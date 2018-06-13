@@ -37,12 +37,38 @@ describe('Teraslice Jobs', () => {
                     operations: [{ some: 'operation' }]
                 };
                 scope.post('/jobs', jobSpec)
-                    .query({ start: false })
+                    .query({ start: true })
                     .reply(202, {
                         job_id: 'some-job-id'
                     });
 
                 jobs.submit(jobSpec)
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve an instanceof a Job', () => {
+                expect(result instanceof Job).toBeTrue();
+            });
+        });
+
+
+        describe('when submitting with a valid and start is set false', () => {
+            let result;
+            beforeEach((done) => {
+                const jobSpec = {
+                    some_job: true,
+                    operations: [{ some: 'operation' }]
+                };
+                scope.post('/jobs', jobSpec)
+                    .query({ start: false })
+                    .reply(202, {
+                        job_id: 'some-job-id'
+                    });
+
+                jobs.submit(jobSpec, true)
                     .then((_result) => {
                         result = _result;
                         done();
@@ -61,7 +87,7 @@ describe('Teraslice Jobs', () => {
                     some_job: true
                 };
                 scope.post('/jobs', jobSpec)
-                    .query({ start: false })
+                    .query({ start: true })
                     .reply(400, 'No job was posted');
 
                 jobs.submit(jobSpec)
