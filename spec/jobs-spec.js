@@ -6,11 +6,13 @@ const nock = require('nock');
 
 describe('Teraslice Jobs', () => {
     let jobs;
+    let scope;
 
     beforeEach(() => {
         ({ jobs } = client({
             baseUrl: 'http://teraslice.example.dev'
         }));
+        scope = nock('http://teraslice.example.dev');
     });
 
     afterEach(() => {
@@ -18,12 +20,6 @@ describe('Teraslice Jobs', () => {
     });
 
     describe('->submit', () => {
-        let scope;
-
-        beforeEach(() => {
-            scope = nock('http://teraslice.example.dev');
-        });
-
         describe('when submitting without a jobSpec', () => {
             it('should fail', (done) => {
                 jobs.submit().then(fail).catch((err) => {
@@ -112,12 +108,6 @@ describe('Teraslice Jobs', () => {
     });
 
     describe('->list', () => {
-        let scope;
-
-        beforeEach(() => {
-            scope = nock('http://teraslice.example.dev');
-        });
-
         describe('when called with nothing', () => {
             let result;
             beforeEach((done) => {
@@ -214,6 +204,21 @@ describe('Teraslice Jobs', () => {
                         id: 'object-example-2'
                     }
                 ]);
+            });
+        });
+    });
+
+    describe('->wrap', () => {
+        describe('when given a jobId', () => {
+            it('should return a instance of a Job', () => {
+                const result = jobs.wrap('some-job-id');
+                expect(result instanceof Job).toBeTrue();
+            });
+        });
+
+        describe('when given a nothing', () => {
+            it('should throw an error', () => {
+                expect(() => jobs.wrap()).toThrowError('Job requires jobId');
             });
         });
     });
