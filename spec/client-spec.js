@@ -73,6 +73,26 @@ describe('Teraslice Client', () => {
                 });
             });
 
+            describe('when called with too many options', () => {
+                let err;
+                beforeEach((done) => {
+                    client.get('/hi', 'hello', 'here', 'oh no')
+                        .then(fail)
+                        .catch((_err) => {
+                            err = _err;
+                            done();
+                        });
+                });
+
+                it('should reject with an error', () => {
+                    expect(err instanceof Error).toBeTrue();
+                });
+
+                it('should reject with invalid endpoint error', () => {
+                    expect(err.toString()).toEqual('Error: Too many arguments passed to client');
+                });
+            });
+
             describe('when called with a valid path', () => {
                 let result;
 
@@ -93,7 +113,27 @@ describe('Teraslice Client', () => {
                 });
             });
 
-            describe('when called with a path and options', () => {
+            describe('when called with a valid path', () => {
+                let result;
+
+                beforeEach((done) => {
+                    scope.get('/hello')
+                        .reply(200, { example: 'hello' });
+
+                    client.get('/hello')
+                        .then((_result) => {
+                            result = _result;
+                            done();
+                        })
+                        .catch(fail);
+                });
+
+                it('should resolve with the response from the server', () => {
+                    expect(result).toEqual({ example: 'hello' });
+                });
+            });
+
+            describe('when called with a path, query and options', () => {
                 let result;
 
                 beforeEach((done) => {
@@ -102,9 +142,31 @@ describe('Teraslice Client', () => {
                         .reply(200, { example: 'hello' });
 
                     client.get('/hello', {
-                        qs: {
-                            hello: true
-                        }
+                        hello: true
+                    }, {
+                        json: false,
+                        headers: { 'Some-Header': 'yes' }
+                    }).then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+                });
+
+                it('should resolve with the response from the server', () => {
+                    expect(result).toEqual(JSON.stringify({ example: 'hello' }));
+                });
+            });
+
+            describe('when called with a path and plain query options', () => {
+                let result;
+
+                beforeEach((done) => {
+                    scope.get('/hello')
+                        .query({ hello: true })
+                        .reply(200, { example: 'hello' });
+
+                    client.get('/hello', {
+                        hello: true
                     }).then((_result) => {
                         result = _result;
                         done();
@@ -138,6 +200,25 @@ describe('Teraslice Client', () => {
                 });
             });
 
+            describe('when called with too many options', () => {
+                let err;
+                beforeEach((done) => {
+                    client.post('/hi', 'hello', 'here', 'oh no')
+                        .then(fail)
+                        .catch((_err) => {
+                            err = _err;
+                            done();
+                        });
+                });
+
+                it('should reject with an error', () => {
+                    expect(err instanceof Error).toBeTrue();
+                });
+
+                it('should reject with invalid endpoint error', () => {
+                    expect(err.toString()).toEqual('Error: Too many arguments passed to client');
+                });
+            });
 
             describe('when called with a non-string value', () => {
                 let err;
@@ -179,7 +260,7 @@ describe('Teraslice Client', () => {
                 });
             });
 
-            describe('when called with a path and body', () => {
+            describe('when called with a path and json', () => {
                 let result;
 
                 beforeEach((done) => {
@@ -198,6 +279,68 @@ describe('Teraslice Client', () => {
 
                 it('should resolve with the response from the server', () => {
                     expect(result).toEqual({ example: 'hello' });
+                });
+            });
+
+            describe('when called with a path and body', () => {
+                let result;
+
+                beforeEach((done) => {
+                    scope.post('/hello', JSON.stringify({ hello: true }))
+                        .reply(200, { example: 'hello' });
+
+                    client.post('/hello', {
+                        body: JSON.stringify({ hello: true }),
+                        json: false,
+                    }).then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+                });
+
+                it('should resolve with the response from the server', () => {
+                    expect(result).toEqual(JSON.stringify({ example: 'hello' }));
+                });
+            });
+
+            describe('when called with a path and headers', () => {
+                let result;
+
+                beforeEach((done) => {
+                    scope.post('/hello', { hello: true })
+                        .reply(200, { example: 'hello' });
+
+                    client.post('/hello', {
+                        headers: {
+                            SomeHeader: 'hi'
+                        },
+                        json: { hello: true },
+                    }).then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+                });
+
+                it('should resolve with the response from the server', () => {
+                    expect(result).toEqual({ example: 'hello' });
+                });
+            });
+
+            describe('when called with a path and a buffer', () => {
+                let result;
+
+                beforeEach((done) => {
+                    scope.post('/hello', 'hello')
+                        .reply(200, 'response-hello');
+
+                    client.post('/hello', Buffer.from('hello')).then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+                });
+
+                it('should resolve with the response from the server', () => {
+                    expect(result).toEqual('response-hello');
                 });
             });
         });

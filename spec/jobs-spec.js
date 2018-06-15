@@ -53,6 +53,32 @@ describe('Teraslice Jobs', () => {
             });
         });
 
+        describe('when submitting and the request fails', () => {
+            let err;
+            beforeEach((done) => {
+                const jobSpec = {
+                    some_job: true,
+                    operations: [{ some: 'operation' }]
+                };
+                scope.post('/jobs', jobSpec)
+                    .query({ start: true })
+                    .reply(500, 'Unable to process request');
+
+                jobs.submit(jobSpec)
+                    .then(fail).catch((_err) => {
+                        err = _err;
+                        done();
+                    });
+            });
+
+            it('should reject with an error', () => {
+                expect(err instanceof Error).toBeTrue();
+            });
+
+            it('should reject with the error message from the server', () => {
+                expect(err.toString()).toEqual('Error: Unable to process request');
+            });
+        });
 
         describe('when submitting with a valid and start is set false', () => {
             let result;
