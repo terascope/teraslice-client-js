@@ -285,6 +285,26 @@ describe('Teraslice Client', () => {
                     expect(result).toEqual({ example: 'hello' });
                 });
             });
+
+            describe('when called with a path and data', () => {
+                let result;
+
+                beforeEach((done) => {
+                    scope.put('/hello', { hello: true })
+                        .reply(200, { example: 'hello' });
+
+                    client.put('/hello', {
+                        hello: true
+                    }).then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+                });
+
+                it('should resolve with the response from the server', () => {
+                    expect(result).toEqual({ example: 'hello' });
+                });
+            });
         });
 
         describe('->delete', () => {

@@ -16,7 +16,8 @@
     "cache": true,
     "all": true,
     "include": [
-      "*.js"
+      "*.js",
+      "lib"
     ],
     "reporter": [
       "text-summary",
