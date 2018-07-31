@@ -1,12 +1,12 @@
 'use strict';
 
-const Jobs = require('./lib/jobs')
-const Job = require('./lib/job')
-const Cluster = require('./lib/cluster')
-const Client = require('./lib/client')
+const Jobs = require('./lib/jobs');
+const Job = require('./lib/job');
+const Cluster = require('./lib/cluster');
+const Client = require('./lib/client');
 // const assets = require('./lib/assets')
 
-module.exports = function (config) {
+module.exports = function wrapTerasliceClient(config) {
     return {
         jobs: new Jobs(config),
         cluster: new Cluster(config),
