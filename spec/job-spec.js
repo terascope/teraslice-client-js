@@ -67,7 +67,7 @@ describe('Teraslice Job', () => {
         });
     });
 
-    ['start', 'stop', 'pause', 'resume', 'recover'].forEach((method) => {
+    ['start', 'stop', 'pause', 'resume'].forEach((method) => {
         describe(`->${method}`, () => {
             describe('when called with nothing', () => {
                 let result;
@@ -111,6 +111,60 @@ describe('Teraslice Job', () => {
                     expect(result).toEqual({
                         key: 'some-other-key'
                     });
+                });
+            });
+        });
+    });
+
+    describe('->recover', () => {
+        beforeEach(() => {
+            scope.get('/jobs/some-job-id/ex')
+                .reply(200, {
+                    exId: 'some-ex-id'
+                });
+        });
+
+        describe('when called with nothing', () => {
+            let result;
+            beforeEach((done) => {
+                scope.post('/ex/some-ex-id/_recover')
+                    .reply(200, {
+                        id: 'example'
+                    });
+
+                new Job({ baseUrl }, 'some-job-id').recover()
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve json result from Teraslice', () => {
+                expect(result).toEqual({
+                    id: 'example'
+                });
+            });
+        });
+
+        describe('when called with a query', () => {
+            let result;
+            beforeEach((done) => {
+                scope.post('/ex/some-ex-id/_recover')
+                    .query({ someParam: 'yes' })
+                    .reply(200, {
+                        key: 'some-other-key'
+                    });
+
+                new Job({ baseUrl }, 'some-job-id').recover({ someParam: 'yes' })
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve json result from Teraslice', () => {
+                expect(result).toEqual({
+                    key: 'some-other-key'
                 });
             });
         });
