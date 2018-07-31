@@ -1,7 +1,7 @@
 'use strict';
 
-const { Cluster } = require('../');
 const nock = require('nock');
+const { Cluster } = require('../');
 
 describe('Teraslice Cluster', () => {
     let cluster;

@@ -1,7 +1,7 @@
 'use strict';
 
-const { Jobs, Job } = require('../');
 const nock = require('nock');
+const { Jobs, Job } = require('../');
 
 describe('Teraslice Jobs', () => {
     let jobs;

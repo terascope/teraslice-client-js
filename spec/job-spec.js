@@ -1,7 +1,7 @@
 'use strict';
 
-const { Job } = require('../');
 const nock = require('nock');
+const { Job } = require('../');
 
 describe('Teraslice Job', () => {
     let scope;
@@ -132,7 +132,8 @@ describe('Teraslice Job', () => {
                         id: 'example'
                     });
 
-                new Job({ baseUrl }, 'some-job-id').recover()
+                new Job({ baseUrl }, 'some-job-id')
+                    .recover()
                     .then((_result) => {
                         result = _result;
                         done();
@@ -150,12 +151,13 @@ describe('Teraslice Job', () => {
             let result;
             beforeEach((done) => {
                 scope.post('/ex/some-ex-id/_recover')
-                    .query({ someParam: 'yes' })
+                    .query({ cleanup: 'errors' })
                     .reply(200, {
                         key: 'some-other-key'
                     });
 
-                new Job({ baseUrl }, 'some-job-id').recover({ someParam: 'yes' })
+                new Job({ baseUrl }, 'some-job-id')
+                    .recover({ cleanup: 'errors' })
                     .then((_result) => {
                         result = _result;
                         done();
