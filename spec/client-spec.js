@@ -240,6 +240,57 @@ describe('Teraslice Client', () => {
                 });
             });
 
+            describe('when called the request throws an error', () => {
+                let err;
+                beforeEach((done) => {
+                    scope.post('/hello')
+                        .replyWithError('Oh no');
+
+                    client.post('/hello', { hello: 'hi' })
+                        .then(fail)
+                        .catch((_err) => {
+                            err = _err;
+                            done();
+                        });
+                });
+
+                it('should reject with an error', () => {
+                    expect(err instanceof Error).toBeTrue();
+                });
+
+                it('should reject with invalid error', () => {
+                    expect(err.toString()).toEqual('Error: Oh no');
+                });
+            });
+
+            describe('when called the server replys with an error', () => {
+                let err;
+                beforeEach((done) => {
+                    scope.post('/hello')
+                        .reply(500, {
+                            message: 'Oh no',
+                            error: 1232
+                        });
+
+                    client.post('/hello', { hello: 'hi' })
+                        .then(fail)
+                        .catch((_err) => {
+                            err = _err;
+                            done();
+                        });
+                });
+
+                it('should reject with an error', () => {
+                    expect(err instanceof Error).toBeTrue();
+                });
+
+                it('should reject with invalid error', () => {
+                    expect(err.toString()).toEqual('Error: Oh no');
+                    expect(err.error).toEqual(1232);
+                    expect(err.code).toEqual(1232);
+                });
+            });
+
             describe('when called with a valid path', () => {
                 let result;
 
