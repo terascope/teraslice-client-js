@@ -40,7 +40,7 @@ describe('Teraslice Assets', () => {
             });
         });
 
-        describe('when called with a string and parse is set', () => {
+        describe('when called with a string and parse response is set', () => {
             let result;
             beforeEach((done) => {
                 const contents = 'example-input';
@@ -107,6 +107,25 @@ describe('Teraslice Assets', () => {
                     .reply(200, { ok: true });
 
                 assets.delete('some-asset-id')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve the json result from Teraslice', () => {
+                expect(result).toEqual(JSON.stringify({ ok: true }));
+            });
+        });
+
+        describe('when called an id and parse response is set', () => {
+            let result;
+
+            beforeEach((done) => {
+                scope.delete('/assets/some-asset-id')
+                    .reply(200, { ok: true });
+
+                assets.delete('some-asset-id', true)
                     .then((_result) => {
                         result = _result;
                         done();
