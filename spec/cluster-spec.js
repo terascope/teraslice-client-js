@@ -187,6 +187,25 @@ describe('Teraslice Cluster', () => {
             });
         });
 
+        describe('when called with assets/assetName', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/txt/assets/assetName')
+                    .reply(200, 'assets-txt-response');
+
+                cluster.txt('assets/assetName')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve the plain test result from Teraslice', () => {
+                expect(result).toEqual('assets-txt-response');
+            });
+        });
+
+
         describe('when called with a invalid type', () => {
             let err;
             beforeEach((done) => {
