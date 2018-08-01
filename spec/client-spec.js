@@ -291,6 +291,31 @@ describe('Teraslice Client', () => {
                 });
             });
 
+            describe('when called the server replys with an string', () => {
+                let err;
+                beforeEach((done) => {
+                    scope.post('/hello')
+                        .reply(500, 'Oh no');
+
+                    client.post('/hello', { hello: 'hi' })
+                        .then(fail)
+                        .catch((_err) => {
+                            err = _err;
+                            done();
+                        });
+                });
+
+                it('should reject with an error', () => {
+                    expect(err instanceof Error).toBeTrue();
+                });
+
+                it('should reject with invalid error', () => {
+                    expect(err.toString()).toEqual('Error: Oh no');
+                    expect(err.error).toEqual(500);
+                    expect(err.code).toEqual(500);
+                });
+            });
+
             describe('when called with a valid path', () => {
                 let result;
 
