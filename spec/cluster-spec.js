@@ -169,6 +169,24 @@ describe('Teraslice Cluster', () => {
             });
         });
 
+        describe('when called with assets', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/txt/assets')
+                    .reply(200, 'assets-txt-response');
+
+                cluster.txt('assets')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve the plain test result from Teraslice', () => {
+                expect(result).toEqual('assets-txt-response');
+            });
+        });
+
         describe('when called with a invalid type', () => {
             let err;
             beforeEach((done) => {
@@ -192,7 +210,7 @@ describe('Teraslice Cluster', () => {
             });
 
             it('should reject with invalid type', () => {
-                expect(err.toString()).toEqual('Error: "invalid" is not a valid type. Must be one of ["slicers","ex","jobs","nodes","workers"]');
+                expect(err.toString()).toEqual('Error: "invalid" is not a valid type. Must be one of ["assets","slicers","ex","jobs","nodes","workers"]');
             });
         });
     });
