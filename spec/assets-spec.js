@@ -26,7 +26,7 @@ describe('Teraslice Assets', () => {
             beforeEach((done) => {
                 const contents = 'example-input';
                 scope.post('/assets', contents)
-                    .reply(200, { assets: [] });
+                    .reply(200, { _id: 'some-asset-id' });
 
                 assets.post(contents)
                     .then((_result) => {
@@ -35,8 +35,27 @@ describe('Teraslice Assets', () => {
                     }).catch(fail);
             });
 
+            it('should resolve the json stringified result from Teraslice', () => {
+                expect(result).toEqual(JSON.stringify({ _id: 'some-asset-id' }));
+            });
+        });
+
+        describe('when called with a string and parse is set', () => {
+            let result;
+            beforeEach((done) => {
+                const contents = 'example-input';
+                scope.post('/assets', contents)
+                    .reply(200, { _id: 'some-asset-id' });
+
+                assets.post(contents, true)
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
             it('should resolve the json result from Teraslice', () => {
-                expect(result).toEqual({ assets: [] });
+                expect(result).toEqual({ _id: 'some-asset-id' });
             });
         });
 
@@ -47,7 +66,7 @@ describe('Teraslice Assets', () => {
                 const testFilePath = path.join(__dirname, 'fixtures', 'test.txt');
                 const contents = fs.readFileSync(testFilePath, 'utf-8');
                 scope.post('/assets', body => contents === body)
-                    .reply(200, { assets: [] });
+                    .reply(200, { _id: 'some-asset-id' });
 
                 assets.post(fs.createReadStream(testFilePath))
                     .then((_result) => {
@@ -56,8 +75,8 @@ describe('Teraslice Assets', () => {
                     }).catch(fail);
             });
 
-            it('should resolve the json result from Teraslice', () => {
-                expect(result).toEqual({ assets: [] });
+            it('should resolve the json stringified result from Teraslice', () => {
+                expect(result).toEqual(JSON.stringify({ _id: 'some-asset-id' }));
             });
         });
     });
