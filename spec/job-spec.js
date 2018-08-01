@@ -202,9 +202,7 @@ describe('Teraslice Job', () => {
                 scope.get('/jobs/some-job-id/ex')
                     .reply(200, {
                         ex_id: 'example-ex-id',
-                        _status: {
-                            example: 'status-data'
-                        }
+                        _status: 'example'
                     });
 
                 new Job({ baseUrl }, 'some-job-id')
@@ -216,9 +214,7 @@ describe('Teraslice Job', () => {
             });
 
             it('should resolve json result from Teraslice', () => {
-                expect(result).toEqual({
-                    example: 'status-data'
-                });
+                expect(result).toEqual('example');
             });
         });
     });
@@ -370,6 +366,143 @@ describe('Teraslice Job', () => {
 
             it('should reject with an error', () => {
                 expect(err.toString()).toEqual('Error: changeWorkers requires action to be one of add, remove, or total');
+            });
+        });
+    });
+
+    describe('->waitForStatus', () => {
+        describe('when called and it matches on the first try', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/jobs/some-job-id/ex')
+                    .reply(200, {
+                        ex_id: 'example-ex-id',
+                        _status: 'example'
+                    });
+
+
+                new Job({ baseUrl }, 'some-job-id')
+                    .waitForStatus('example')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve json result from Teraslice', () => {
+                expect(result).toEqual('example');
+            });
+        });
+
+        describe('when called and it matches on the second try', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/jobs/some-job-id/ex')
+                    .reply(200, {
+                        ex_id: 'example-ex-id',
+                        _status: 'not-example'
+                    });
+
+                scope.get('/jobs/some-job-id/ex')
+                    .reply(200, {
+                        ex_id: 'example-ex-id',
+                        _status: 'example'
+                    });
+
+
+                new Job({ baseUrl }, 'some-job-id')
+                    .waitForStatus('example')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve json result from Teraslice', () => {
+                expect(result).toEqual('example');
+            });
+        });
+
+        describe('when called and it never matches', () => {
+            let err;
+
+            beforeEach((done) => {
+                scope.get('/jobs/some-job-id/ex')
+                    .times(11)
+                    .reply(200, {
+                        ex_id: 'example-ex-id',
+                        _status: 'not-example'
+                    });
+
+
+                new Job({ baseUrl }, 'some-job-id')
+                    .waitForStatus('example', 100, 1000)
+                    .then(() => {
+                        fail('Expected job to status not to change');
+                    }).catch((_err) => {
+                        err = _err;
+                        done();
+                    });
+            });
+
+            it('should reject with a timeout error', () => {
+                expect(err.toString()).toEqual('Error: Job status failed to change from status "not-example" within 1000ms');
+            });
+        });
+
+        describe('when called and returns a terminal status', () => {
+            let err;
+
+            beforeEach((done) => {
+                scope.get('/jobs/some-job-id/ex')
+                    .times(11)
+                    .reply(200, {
+                        ex_id: 'example-ex-id',
+                        _status: 'failed'
+                    });
+
+
+                new Job({ baseUrl }, 'some-job-id')
+                    .waitForStatus('example')
+                    .then(() => {
+                        fail('Expected job to status not to finish');
+                    }).catch((_err) => {
+                        err = _err;
+                        done();
+                    });
+            });
+
+            it('should reject with a terminal status error', () => {
+                expect(err.toString()).toEqual('Error: Job has status: "failed" which is terminal so status: "example" is not possible. job_id: some-job-id');
+            });
+        });
+
+        describe('when called and the second status is completed', () => {
+            let result;
+            beforeEach((done) => {
+                scope.get('/jobs/some-job-id/ex')
+                    .reply(200, {
+                        ex_id: 'example-ex-id',
+                        _status: 'not-example'
+                    });
+
+                scope.get('/jobs/some-job-id/ex')
+                    .reply(200, {
+                        ex_id: 'example-ex-id',
+                        _status: 'completed'
+                    });
+
+
+                new Job({ baseUrl }, 'some-job-id')
+                    .waitForStatus('example')
+                    .then((_result) => {
+                        result = _result;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve json result from Teraslice', () => {
+                expect(result).toEqual('completed');
             });
         });
     });

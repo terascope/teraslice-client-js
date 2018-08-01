@@ -21,6 +21,23 @@ describe('Teraslice Assets', () => {
     });
 
     describe('->post', () => {
+        describe('when called with nothing', () => {
+            let err;
+
+            beforeEach((done) => {
+                assets.post()
+                    .then(fail)
+                    .catch((_err) => {
+                        err = _err;
+                        done();
+                    });
+            });
+
+            it('should reject with asset stream validation error', () => {
+                expect(err.toString()).toEqual('Error: Asset stream must not be empty');
+            });
+        });
+
         describe('when called with a string', () => {
             let result;
             beforeEach((done) => {
