@@ -273,6 +273,73 @@ describe('Teraslice Job', () => {
         });
     });
 
+    describe('->workers', () => {
+        describe('when called and the state has workers', () => {
+            let results;
+            beforeEach((done) => {
+                scope.get('/cluster/state')
+                    .reply(200, {
+                        'some-node-id': {
+                            node_id: 'some-node-id',
+                            active: [
+                                {
+                                    job_id: 'some-job-id',
+                                    assignment: 'worker'
+                                },
+                                {
+                                    job_id: 'some-job-id',
+                                    assignment: 'worker'
+                                }
+                            ]
+                        },
+                        'some-other-node-id': {
+                            node_id: 'some-other-node-id',
+                            active: [
+                                {
+                                    job_id: 'some-job-id',
+                                    assignment: 'worker'
+                                },
+                                {
+                                    job_id: 'some-other-job-id',
+                                    assignment: 'worker'
+                                },
+                                {
+                                    job_id: 'some-other-job-id',
+                                    assignment: 'execution_controller'
+                                }
+                            ]
+                        }
+                    });
+
+                new Job({ baseUrl }, 'some-job-id')
+                    .workers()
+                    .then((_results) => {
+                        results = _results;
+                        done();
+                    }).catch(fail);
+            });
+
+            it('should resolve json result from Teraslice', () => {
+                expect(results).toEqual([
+                    {
+                        node_id: 'some-node-id',
+                        job_id: 'some-job-id',
+                        assignment: 'worker'
+                    },
+                    {
+                        node_id: 'some-node-id',
+                        job_id: 'some-job-id',
+                        assignment: 'worker'
+                    },
+                    {
+                        node_id: 'some-other-node-id',
+                        job_id: 'some-job-id',
+                        assignment: 'worker'
+                    },
+                ]);
+            });
+        });
+    });
 
     describe('->changeWorkers', () => {
         describe('when called with add and num', () => {
@@ -491,7 +558,6 @@ describe('Teraslice Job', () => {
                         ex_id: 'example-ex-id',
                         _status: 'completed'
                     });
-
 
                 new Job({ baseUrl }, 'some-job-id')
                     .waitForStatus('example')
