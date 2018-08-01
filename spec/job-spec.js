@@ -120,7 +120,7 @@ describe('Teraslice Job', () => {
         beforeEach(() => {
             scope.get('/jobs/some-job-id/ex')
                 .reply(200, {
-                    exId: 'some-ex-id'
+                    ex_id: 'some-ex-id'
                 });
         });
 
@@ -178,7 +178,7 @@ describe('Teraslice Job', () => {
             beforeEach((done) => {
                 scope.get('/jobs/some-job-id/ex')
                     .reply(200, {
-                        exId: 'example-ex-id'
+                        ex_id: 'example-ex-id'
                     });
 
                 new Job({ baseUrl }, 'some-job-id')
@@ -201,7 +201,7 @@ describe('Teraslice Job', () => {
             beforeEach((done) => {
                 scope.get('/jobs/some-job-id/ex')
                     .reply(200, {
-                        exId: 'example-ex-id',
+                        ex_id: 'example-ex-id',
                         _status: {
                             example: 'status-data'
                         }
