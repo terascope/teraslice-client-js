@@ -291,6 +291,58 @@ describe('Teraslice Client', () => {
                 });
             });
 
+            describe('when called the server replys and the error is a string', () => {
+                let err;
+                beforeEach((done) => {
+                    scope.post('/hello')
+                        .reply(428, {
+                            error: 'Uh-oh here is an error'
+                        });
+
+                    client.post('/hello', { hello: 'hi' })
+                        .then(fail)
+                        .catch((_err) => {
+                            err = _err;
+                            done();
+                        });
+                });
+
+                it('should reject with an error', () => {
+                    expect(err instanceof Error).toBeTrue();
+                });
+
+                it('should reject with invalid error', () => {
+                    expect(err.toString()).toEqual('Error: Uh-oh here is an error');
+                    expect(err.error).toEqual(428);
+                    expect(err.code).toEqual(428);
+                });
+            });
+
+            describe('when called the server replys with empty error', () => {
+                let err;
+                beforeEach((done) => {
+                    scope.post('/hello')
+                        .reply(500);
+
+                    client.post('/hello', { hello: 'hi' })
+                        .then(fail)
+                        .catch((_err) => {
+                            err = _err;
+                            done();
+                        });
+                });
+
+                it('should reject with an error', () => {
+                    expect(err instanceof Error).toBeTrue();
+                });
+
+                it('should reject with invalid error', () => {
+                    expect(err.toString()).toEqual('Error: Internal Server Error');
+                    expect(err.error).toEqual(500);
+                    expect(err.code).toEqual(500);
+                });
+            });
+
             describe('when called the server replys with an string', () => {
                 let err;
                 beforeEach((done) => {
