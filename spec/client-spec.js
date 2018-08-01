@@ -1,5 +1,6 @@
 'use strict';
 
+const Promise = require('bluebird');
 const nock = require('nock');
 const terasliceClientJs = require('../');
 
