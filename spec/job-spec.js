@@ -540,35 +540,7 @@ describe('Teraslice Job', () => {
             });
 
             it('should reject with a terminal status error', () => {
-                expect(err.toString()).toEqual('Error: Job has status: "failed" which is terminal so status: "example" is not possible. job_id: some-job-id');
-            });
-        });
-
-        describe('when called and the second status is completed', () => {
-            let result;
-            beforeEach((done) => {
-                scope.get('/jobs/some-job-id/ex')
-                    .reply(200, {
-                        ex_id: 'example-ex-id',
-                        _status: 'not-example'
-                    });
-
-                scope.get('/jobs/some-job-id/ex')
-                    .reply(200, {
-                        ex_id: 'example-ex-id',
-                        _status: 'completed'
-                    });
-
-                new Job({ baseUrl }, 'some-job-id')
-                    .waitForStatus('example')
-                    .then((_result) => {
-                        result = _result;
-                        done();
-                    }).catch(fail);
-            });
-
-            it('should resolve json result from Teraslice', () => {
-                expect(result).toEqual('completed');
+                expect(err.toString()).toEqual('Error: Job cannot reach the target status, "example", because it is in the terminal state, "failed"');
             });
         });
     });
