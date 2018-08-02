@@ -1,7 +1,7 @@
 'use strict';
 
 const nock = require('nock');
-const { Cluster } = require('../');
+const Cluster = require('../lib/cluster');
 
 describe('Teraslice Cluster', () => {
     let cluster;

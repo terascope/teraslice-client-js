@@ -3,7 +3,7 @@
 const nock = require('nock');
 const path = require('path');
 const fs = require('fs');
-const { Assets } = require('../');
+const Assets = require('../lib/assets');
 
 describe('Teraslice Assets', () => {
     let assets;

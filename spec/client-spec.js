@@ -2,8 +2,7 @@
 
 const nock = require('nock');
 const terasliceClientJs = require('../');
-
-const { Client } = terasliceClientJs;
+const Client = require('../lib/client');
 
 describe('Teraslice Client', () => {
     describe('when using the main export function', () => {
@@ -13,6 +12,13 @@ describe('Teraslice Client', () => {
 
         it('should not throw an error if constructed with nothing', () => {
             expect(() => terasliceClientJs()).not.toThrow();
+        });
+
+        it('should have jobs, cluster, and assets', () => {
+            const client = terasliceClientJs();
+            expect(client.jobs).not.toBeUndefined();
+            expect(client.cluster).not.toBeUndefined();
+            expect(client.assets).not.toBeUndefined();
         });
     });
 
