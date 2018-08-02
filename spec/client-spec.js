@@ -500,7 +500,6 @@ describe('Teraslice Client', () => {
                 });
             });
 
-
             describe('when called with a non-string value', () => {
                 let err;
                 beforeEach((done) => {
